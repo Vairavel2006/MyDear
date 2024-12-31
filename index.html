@@ -34,7 +34,6 @@
             animation: bounce 2s infinite;
             cursor: pointer;
         }
-
         @keyframes bounce {
             0%, 100% {
                 transform: translateY(0);
@@ -42,14 +41,6 @@
             50% {
                 transform: translateY(-20px);
             }
-        }
-
-        .message {
-            font-family: 'Arial', sans-serif;
-            color: #fff;
-            margin-top: 20px;
-            font-size: 1.5rem;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .i-love-you {
@@ -69,62 +60,51 @@
             to { opacity: 1; }
         }
 
-        .confetti {
-            position: absolute;
+        .video-popup {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+        }
+
+        video {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <img src="image.png" alt="Special Moment" onclick="showLove()">
-        <div class="message">Happy New Year, Mrs.X! 2025 to Us! 🌟</div>
         <div class="i-love-you" id="loveMessage">I Love You ❤️</div>
     </div>
 
-    <canvas class="confetti"></canvas>
+    <div class="video-popup" id="videoPopup">
+        <span class="close" onclick="closeVideo()">×</span>
+        <video id="proposalVideo" controls>
+            <source src="video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
 
     <script>
-        const canvas = document.querySelector('.confetti');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const colors = ['#FFC0CB', '#FFD700', '#ADD8E6', '#98FB98', '#FF69B4'];
-        const confetti = Array.from({ length: 100 }).map(() => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            radius: Math.random() * 6 + 1,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            speedY: Math.random() * 3 + 1,
-            speedX: (Math.random() - 0.5) * 2
-        }));
-
-        function drawConfetti() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            confetti.forEach(particle => {
-                ctx.beginPath();
-                ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-                ctx.fillStyle = particle.color;
-                ctx.fill();
-
-                particle.y += particle.speedY;
-                particle.x += particle.speedX;
-
-                if (particle.y > canvas.height) particle.y = 0;
-                if (particle.x > canvas.width) particle.x = 0;
-                if (particle.x < 0) particle.x = canvas.width;
-            });
-
-            requestAnimationFrame(drawConfetti);
-        }
-
-        drawConfetti();
-
         function showLove() {
             const loveMessage = document.getElementById('loveMessage');
             loveMessage.style.display = 'block';
@@ -146,7 +126,10 @@
                 heart.style.color = 'red';
                 heart.style.left = `${Math.random() * 100}%`;
                 heart.style.top = `${Math.random() * 100}%`;
-                heart.style.animation = `floatUp ${Math.random() * 2 + 3}s linear`; 
+                heart.style.cursor = 'pointer';
+                heart.style.pointerEvents = 'auto';
+                heart.onclick = showVideo; // Trigger video on heart click
+                heart.style.animation = `floatUp ${Math.random() * 2 + 3}s linear`;
                 heartContainer.appendChild(heart);
 
                 heart.addEventListener('animationend', () => {
@@ -157,6 +140,21 @@
             setTimeout(() => {
                 document.body.removeChild(heartContainer);
             }, 5000);
+        }
+
+        function showVideo() {
+            const videoPopup = document.getElementById('videoPopup');
+            const video = document.getElementById('proposalVideo');
+            videoPopup.style.display = 'flex';
+            video.play(); // Automatically play the video
+        }
+
+        function closeVideo() {
+            const videoPopup = document.getElementById('videoPopup');
+            const video = document.getElementById('proposalVideo');
+            video.pause(); // Pause the video
+            video.currentTime = 0; // Reset video playback
+            videoPopup.style.display = 'none';
         }
     </script>
 </body>
